@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ironwood Power Services — Florida Critical Path</title>
+<style>
+:root{--bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--border:#2a2a2a;--border2:#333;--text:#e8e8e8;--text2:#a0a0a0;--text3:#555;--amber:#f59e0b;--amber-dim:#92600a;--amber-bg:#1a1200;--red:#ef4444;--red-dim:#7f1d1d;--red-bg:#1a0000;--green:#22c55e;--green-dim:#14532d;--green-bg:#001a07;--blue:#3b82f6;--blue-dim:#1e3a6e;--blue-bg:#00081a;--purple:#a855f7;--teal:#14b8a6;--done:#3a3a3a;--check:#2a2a2a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.header{background:var(--bg2);border-bottom:1px solid var(--border2);padding:16px 28px;position:sticky;top:0;z-index:100}
+.hrow1{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:10px;font-weight:600;letter-spacing:.12em;color:var(--amber);text-transform:uppercase;margin-bottom:3px}
+.title{font-size:20px;font-weight:700;color:#fff}
+.sub{font-size:11px;color:var(--text2);margin-top:2px}
+.op{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;min-width:190px}
+.op-lbl{font-size:10px;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.op-bar{height:5px;background:var(--border2);border-radius:3px;overflow:hidden}
+.op-fill{height:100%;background:var(--green);border-radius:3px;transition:width .4s}
+.op-nums{font-size:11px;color:var(--text2);margin-top:4px}
+.op-nums strong{color:var(--green)}
+.sync-row{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;color:var(--text3)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
+.sync-dot.live{background:var(--green)}
+.sync-dot.saving{background:var(--amber);animation:pulse .6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.fbar{display:flex;align-items:center;gap:5px;margin-top:10px;flex-wrap:wrap}
+.fbtn{font-size:10px;font-weight:600;padding:3px 9px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .15s;letter-spacing:.03em}
+.fbtn:hover{border-color:var(--amber);color:var(--amber)}
+.fbtn.active{background:var(--amber);border-color:var(--amber);color:#000}
+.fsep{width:1px;height:16px;background:var(--border2);margin:0 3px}
+.rbtn{font-size:10px;font-weight:600;padding:3px 9px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;margin-left:auto;transition:all .15s}
+.rbtn:hover{border-color:var(--red);color:var(--red)}
+.share-bar{background:var(--blue-bg);border:1px solid var(--blue-dim);border-radius:6px;padding:8px 14px;margin:12px 28px 0;font-size:11px;color:#93c5fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.share-bar strong{color:var(--blue)}
+.callout{margin:12px 28px 0;background:var(--amber-bg);border:1px solid var(--amber-dim);border-left:3px solid var(--amber);border-radius:6px;padding:9px 13px;font-size:11px;color:#d4a030;line-height:1.6}
+.main{padding:16px 28px 60px;max-width:1060px;margin:0 auto}
+.section{border:1px solid var(--border2);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.sh{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:var(--bg2);transition:background .15s;user-select:none}
+.sh:hover{background:var(--bg3)}
+.si{width:28px;height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.st{font-size:12px;font-weight:700;color:#fff;letter-spacing:.02em;text-transform:uppercase;flex:1}
+.sc{font-size:10px;color:var(--text2)}
+.sp{width:72px}.sp-bar{height:3px;background:var(--border2);border-radius:2px;overflow:hidden}.sp-fill{height:100%;border-radius:2px;transition:width .4s}
+.chev{font-size:10px;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.chev.open{transform:rotate(90deg)}
+.sb{display:none;background:var(--bg)}
+.sb.open{display:block}
+.task{display:flex;gap:10px;padding:10px 14px;border-top:1px solid var(--border);transition:background .1s}
+.task:hover{background:var(--bg2)}
+.task.done{background:transparent}
+.task.hidden{display:none}
+.cbw{flex-shrink:0;padding-top:1px;cursor:pointer}
+.cb{width:19px;height:19px;border-radius:4px;border:2px solid var(--check);background:transparent;display:flex;align-items:center;justify-content:center;transition:all .15s;cursor:pointer}
+.cb:hover{border-color:var(--green)}
+.cb.checked{background:var(--green);border-color:var(--green)}
+.cb.checked::after{content:'✓';font-size:11px;font-weight:700;color:#000}
+.tb{flex:1;min-width:0}
+.ttop{display:flex;align-items:flex-start;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+.tname{font-size:12px;font-weight:600;color:#fff;line-height:1.3;flex:1;min-width:160px}
+.task.done .tname{text-decoration:line-through;color:var(--done)}
+.tdesc{font-size:11px;color:var(--text2);line-height:1.5}
+.task.done .tdesc{color:var(--done)}
+.ttags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
+.tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.04em;text-transform:uppercase}
+.tag-critical{background:var(--red-bg);color:var(--red);border:1px solid var(--red-dim)}
+.tag-priority{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-dim)}
+.tag-done{background:var(--green-bg);color:var(--green);border:1px solid var(--green-dim)}
+.tag-p0{background:#0a0015;color:#c084fc;border:1px solid #4a1a70}
+.tag-p1{background:#00101a;color:#38bdf8;border:1px solid #0c3a54}
+.tag-p2{background:#001a18;color:#14b8a6;border:1px solid #0a4a44}
+.tag-p3{background:#0a1200;color:#86efac;border:1px solid #1a4a2a}
+.tag-p4{background:#0a0800;color:#fde68a;border:1px solid #4a3800}
+.tag-p5{background:#100010;color:#d8b4fe;border:1px solid #3a1050}
+.tag-new{background:#001a3a;color:#60a5fa;border:1px solid #1e3a5f}
+.loading{text-align:center;padding:40px;color:var(--text2);font-size:13px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hrow1">
+    <div>
+      <div class="brand">Ironwood Power Services · Utility Vegetation Management</div>
+      <div class="title">Florida Market Entry — Critical Path</div>
+      <div class="sub">Ironwood Heavy Highway LLC · Terry Tree Services LLC · Blueprint for State Expansion</div>
+    </div>
+    <div class="op">
+      <div class="op-lbl">Overall progress</div>
+      <div class="op-bar"><div class="op-fill" id="op-fill" style="width:0%"></div></div>
+      <div class="op-nums"><strong id="op-done">0</strong> of <span id="op-total">0</span> items complete</div>
+    </div>
+  </div>
+  <div class="sync-row">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="sync-lbl">Connecting…</span>
+  </div>
+  <div class="fbar">
+    <span style="font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.05em">FILTER:</span>
+    <button class="fbtn active" data-filter="all">All</button>
+    <button class="fbtn" data-filter="critical">★ Critical</button>
+    <button class="fbtn" data-filter="priority">Priority</button>
+    <div class="fsep"></div>
+    <button class="fbtn" data-filter="p0">P0 Foundation</button>
+    <button class="fbtn" data-filter="p1">P1 30-Day</button>
+    <button class="fbtn" data-filter="p2">P2 First Revenue</button>
+    <button class="fbtn" data-filter="p3">P3 IOU Scale</button>
+    <button class="fbtn" data-filter="p5">P5 Civil</button>
+    <div class="fsep"></div>
+    <button class="fbtn" data-filter="open">Open only</button>
+    <button class="fbtn" data-filter="done">Done only</button>
+    <button class="rbtn" onclick="resetAll()">↺ Reset new state</button>
+  </div>
+</div>
+
+<div class="share-bar">
+  <strong>🔗 Shared view:</strong> Progress is synced live — anyone viewing this file sees the same checkboxes. Check an item and it updates for everyone.
+</div>
+
+<div class="callout">
+  <strong>Why now:</strong> FPL's PSC-approved 2026–2035 Storm Protection Plan expands VM scope, and post-Ian/post-Milton budgets are up across all three IOUs. Hurricane season (Jun–Nov) makes storm-contractor steps time-critical. Market: <strong>3 IOUs · 16 co-ops (FECA) · 34 municipal utilities.</strong><br>
+  <span style="color:var(--green);font-weight:600">Already done:</span> Sunbiz · FDOT · Duke Energy FL (registered + Non-Native storm contract won, 3-yr) · SECO Energy registered. Lead established via hurricane cleanup in Hillsborough &amp; Highlands counties — document as a reference in every bid.<br>
+  <span style="color:var(--text3);font-size:10px">Strategy first proposed internally 2022 (co-ops/munis first, FL local presence, organic growth) — now executing. Contact cards from original research in final three sections.</span>
+</div>
+
+<div class="loading" id="loading">Loading shared progress…</div>
+<div class="main" id="main" style="display:none"></div>
+
+<script>
+const SECTIONS=[
+{id:'office',label:'Office, Legal & Finance',icon:'🏢',cls:'o',items:[
+{id:'o1',phase:'p0',flag:'done',name:'Confirm FL entity active (Sunbiz)',desc:'Already registered. Verify the annual report is filed and status reads Active on Sunbiz.'},
+{id:'o2',phase:'p0',flag:'done',name:'Confirm FDOT registration / prequalification',desc:'Already registered with FDOT. Confirm it\'s current and reflects vegetation / right-of-way scope.'},
+{id:'o3',phase:'p0',flag:'priority',name:'Secure a Florida physical office',desc:'Central FL / I-4 corridor (Polk, Osceola, or Orange) equidistant between FPL (east & south) and Duke (north). A commercial suite or shared office is enough to start — it activates your FL presence operationally.'},
+{id:'o4',phase:'p0',flag:'priority',name:'Working capital line of credit + banking',desc:'Utility/muni invoices pay net 30–60 while payroll runs weekly — that gap sinks under-capitalized contractors. Set up operational banking and a working-capital line before scaling crews.'},
+{id:'o5',phase:'p1',flag:'priority',name:'Establish surety / bonding capacity',desc:'Some municipal and utility contracts require bid, performance and payment bonds. Get a surety relationship and bonding line in place so a bond requirement never knocks you out of a pursuit.'},
+{id:'o6',phase:'p1',flag:'',name:'Job-costing / accounting system',desc:'Track profitability by circuit and unit ($/mile, $/trim) with WIP and per-crew costing. Without it you can\'t tell which FL work actually makes money — and you\'ll need it to sharpen the bid model.'},
+{id:'o7',phase:'p1',flag:'',name:'County / city local business tax receipts',desc:'Florida counties and many cities require a local business tax receipt (the old "occupational license") where you operate. Cheap and easy, but a common miss.'},
+{id:'o8',phase:'p1',flag:'',name:'Accounts receivable / utility billing process',desc:'Utilities require specific invoice formats, billing codes, and approval workflows (some require electronic invoicing through Ariba/SAP). Set up your AR process to match utility requirements before first invoice — net 30–60 payment terms make cash flow management critical.',isNew:true},
+]},
+{id:'license',label:'Licensing, Insurance & Registrations',icon:'📋',cls:'r',items:[
+{id:'l1',phase:'p0',flag:'priority',name:'FL contractor license — application pending',desc:'Test passed and application submitted — awaiting state approval. Confirm the approved classification covers your contracting scope. This license is also the gateway to the Phase-5 civil construction line.'},
+{id:'l2',phase:'p0',flag:'critical',name:'Confirm FL insurance: GL, workers\' comp, auto',desc:'Must cover FL jobsites. FPL typically requires $5M+ GL. Add FL-specific endorsements before bidding — confirm current limits with each utility.'},
+{id:'l3',phase:'p0',flag:'',name:'Update ISNetworld profile for FL operations',desc:'Maintain/confirm your A rating and make FL operations visible. Several IOUs gate bidding on an active ISN profile.'},
+{id:'l4',phase:'p0',flag:'critical',name:'DOT / FMCSA interstate operating compliance',desc:'Running CDL trucks across state lines — separate from FDOT registration. Confirm USDOT number, IRP apportioned plates, IFTA fuel-tax account, ELDs, driver qualification files, and FMCSA drug & alcohol testing consortium + Clearinghouse enrollment.'},
+{id:'l5',phase:'p1',flag:'priority',name:'Add umbrella, equipment & pollution coverage',desc:'Hitting $5M+ usually means GL + an umbrella/excess layer. Add inland marine (equipment floater) for owned & rented gear, and pollution/herbicide liability to back your ROW spray work. Confirm you can issue additional-insured and waiver-of-subrogation endorsements — utilities require them.'},
+{id:'l6',phase:'p0',flag:'',name:'FL employment law compliance: E-Verify + Wage Theft Act',desc:'Florida requires E-Verify for all private employers. The FL Wage Theft Act (stronger than federal) requires specific pay stub content and timely wage payment. Get your payroll provider compliant before hiring FL-based employees.',isNew:true},
+]},
+{id:'iou',label:'IOU Targets — Register & Pursue',icon:'⚡',cls:'i',items:[
+{id:'i1',phase:'p0',flag:'critical',name:'FPL — register on supplier portal (Ariba)',desc:'#1 TARGET. ~5.8M accounts · east & south FL · NextEra subsidiary — largest U.S. utility. HARD GATE: portal registration takes 2–6 weeks, so do it before MSAs release. VM is core to the 2026–2035 Storm Protection Plan.'},
+{id:'i2',phase:'p0',flag:'done',name:'Duke Energy FL — registered (SAP SRM / Ariba)',desc:'~1.9M accounts · central & north FL. Already registered and receiving bids.'},
+{id:'i2b',phase:'p2',flag:'done',name:'Duke FL — first contract won (Non-Native, 3-yr)',desc:'Already awarded — your first FL IOU win. Use it as a reference in every bid and prequalification package. This proves local crew capability to every other IOU and co-op.'},
+{id:'i3',phase:'p0',flag:'priority',name:'TECO — register on supplier portal',desc:'~800K accounts · greater Tampa Bay · Emera subsidiary. TECO uses its own portal — separate registration required.'},
+{id:'i4',phase:'p3',flag:'priority',name:'FPL — pursue VM MSA',desc:'LARGEST REVENUE OPPORTUNITY. FPL pre-qualifies contractors before RFP and awards by region — landing one region initially is realistic. Contact FPL Supplier Diversity and the Distribution VM department; monitor Ariba. MSAs typically 3–5 yr.'},
+{id:'i5',phase:'p3',flag:'',name:'Duke FL — pursue distribution VM MSA',desc:'Small contractor panel, multi-year agreements run by Duke\'s Distribution VM department. Territory overlaps SECO counties (Citrus, Hernando, Pasco) = dense market. Keep up direct outreach beyond the storm contract.'},
+{id:'i6',phase:'p3',flag:'',name:'TECO — pursue VM MSA',desc:'Compact 4-county territory — may be easier to enter as a 2nd/3rd panel contractor. Dense urban/suburban canopy (Tampa, Brandon, Clearwater, Plant City) = harder trimming but higher $/mile.'},
+{id:'i7',phase:'p2',flag:'',name:'Map incumbent contractors holding current MSAs',desc:'Research who currently holds VM MSAs at FPL, Duke, and TECO (Wright Tree, Asplundh, Osmose, Clearion, Lewis are the main FL incumbents). Know when their contracts expire — that is your entry window. Your estimator hire should have this intel.',isNew:true},
+]},
+{id:'coop',label:'Cooperative Targets (FECA — 16 members)',icon:'🤝',cls:'c',items:[
+{id:'c1',phase:'p1',flag:'priority',name:'Call FECA for member-co-op introductions',desc:'850-877-6166 · feca.com — the single entry point to all 16 distribution members. The annual conference is where co-op relationships get built.'},
+{id:'c3',phase:'p1',flag:'done',name:'SECO Energy — registered',desc:'TIER 1. Already registered. 265K+ members across 7 counties (Citrus, Hernando, Lake, Levy, Marion, Pasco, Sumter); 3rd-largest co-op in FL. Overlaps Duke territory = dense market.'},
+{id:'c4',phase:'p1',flag:'priority',name:'LCEC — register & contact procurement',desc:'TIER 1. Lee County Electric Cooperative — SW Florida, heavy post-Ian rebuilding.'},
+{id:'c5',phase:'p1',flag:'priority',name:'Peace River EC — register & contact procurement',desc:'TIER 1. Charlotte, Polk, Hardee, Highlands & Manatee counties.'},
+{id:'c6',phase:'p2',flag:'',name:'Clay Electric — register & contact',desc:'TIER 2. One of the larger FL co-ops — 14 counties across north Florida. 182,077 consumers. 14,000 miles of T&D lines. clayelectric.com.'},
+{id:'c7',phase:'p2',flag:'',name:'Central Florida EC — register & contact',desc:'TIER 2. 35,231 consumers across 6 north-central FL counties. Fast-cycle first-revenue target. cfec.com.'},
+{id:'c8',phase:'p2',flag:'',name:'Withlacoochee River EC — register & contact',desc:'TIER 2. 229,911 consumers across 5 central & western FL counties. Strong first-revenue target — faster award cycle than IOUs. wrec.net.'},
+{id:'c9',phase:'p3',flag:'',name:'Tri-County EC — register & contact',desc:'TIER 3 — smaller, relationship opportunity.'},
+{id:'c10',phase:'p3',flag:'',name:'Suwannee Valley EC — register & contact',desc:'TIER 3 — smaller, relationship opportunity.'},
+{id:'c11',phase:'p3',flag:'',name:'Glades EC — register & contact',desc:'TIER 3. 17,000 consumers, 4 central FL counties, 2,600 miles. gladeselectric.com.'},
+{id:'c12',phase:'p3',flag:'',name:'Florida Keys EC — register & contact',desc:'TIER 3 — smaller, relationship opportunity.'},
+{id:'c13',phase:'p3',flag:'',name:'Talquin EC — register & contact',desc:'TIER 3 — smaller, relationship opportunity.'},
+{id:'c14',phase:'p3',flag:'',name:'Gulf Coast EC — register & contact',desc:'TIER 3 — smaller, relationship opportunity.'},
+{id:'c15',phase:'p3',flag:'',name:'Escambia River EC — register & contact',desc:'TIER 3 — smaller, relationship opportunity.'},
+{id:'c16',phase:'p3',flag:'',name:'CHELCO — register & contact',desc:'TIER 3. Choctawhatchee Electric — NW Florida panhandle.'},
+{id:'c17',phase:'p3',flag:'',name:'West Florida EC — register & contact',desc:'TIER 3 — smaller, relationship opportunity.'},
+{id:'c18',phase:'p3',flag:'',name:'Okefenoke REMC — register & contact',desc:'TIER 3 — smaller, relationship opportunity.'},
+]},
+{id:'muni',label:'Municipal Targets',icon:'🏙️',cls:'m',items:[
+{id:'m1',phase:'p1',flag:'priority',name:'JEA (Jacksonville) — register & contact',desc:'Largest municipal utility in FL. Lower barriers than IOUs and a key storm-list target. Also check DemandStar / BidSync for postings.'},
+{id:'m2',phase:'p1',flag:'',name:'OUC (Orlando) — register & contact',desc:'Orlando Utilities Commission — 268,100 consumers, City of Orlando, 393 transmission miles. One of the largest FL municipals. ouc.com.'},
+{id:'m3',phase:'p1',flag:'priority',name:'Lakeland Electric — register & contact',desc:'Strong first-revenue target — municipals can award in 60–90 days vs 6–18 months for IOUs.'},
+{id:'m4',phase:'p2',flag:'',name:'KUA (Kissimmee) — register & contact',desc:'Public utility. 90,000 consumers. City of Kissimmee. 6th largest utility in FL. kua.com. Central FL footprint, close to I-4 base.'},
+{id:'m5',phase:'p2',flag:'',name:'Ocala Electric — register & contact',desc:'Public utility. 50,000 consumers. City of Ocala. 1,200 distribution miles. ocalafl.org/government/electric-utility.'},
+{id:'m6',phase:'p2',flag:'',name:'City of Tallahassee Utilities — register & contact',desc:'North-FL municipal; separate procurement.'},
+{id:'m7',phase:'p2',flag:'',name:'GRU (Gainesville) — register & contact',desc:'Gainesville Regional Utilities; separate procurement.'},
+{id:'m8',phase:'p3',flag:'',name:'Identify & register remaining municipals (34 total)',desc:'Work the long tail as capacity grows. DemandStar, BidSync & PlanetBids surface most municipal VM solicitations.'},
+]},
+{id:'crew',label:'Personnel & Crews',icon:'👷',cls:'cr',items:[
+{id:'cr1',phase:'p0',flag:'critical',name:'Hire a FL VM estimator / circuit specialist',desc:'YOUR MOST IMPORTANT HIRE. Needs: existing relationships with FL utility VM departments; ability to walk circuits and produce unit-price bids ($/mile, $/trim, $/access); knowledge of FL species & ROW standards; ANSI A300 and NERC FAC-003 familiarity. Recruit from incumbents (Wright Tree, Asplundh, Osmose, Lewis) or retiring utility VM managers.'},
+{id:'cr2',phase:'p0',flag:'priority',name:'Set up as a Florida employer',desc:'FL reemployment tax account, new-hire reporting, I-9s, and E-Verify. Get construction-class workers\' comp and a payroll provider that handles multi-state crews.'},
+{id:'cr3',phase:'p0',flag:'priority',name:'Hire FL office manager / admin',desc:'Someone on the ground to handle compliance paperwork, utility portal submissions, invoice processing, and crew logistics. Critical before work starts — trying to run FL admin from up north creates gaps.',isNew:true},
+{id:'cr4',phase:'p1',flag:'',name:'Per diem & lodging plan for traveling crews',desc:'For NY/Maine/PA crews rotating in — set per-diem rates and a lodging approach (extended-stay, crew housing) and build it into the FL cost model.'},
+{id:'cr5',phase:'p2',flag:'',name:'Build the Florida crew pipeline',desc:'Temp agencies for speed; rotate traveling crews from NY, Maine & PA; hire local; subcontract. Key sources: Withlacoochee Technical College (lineman program), TCIA job board, IBEW 756 (Tampa), IBEW 349 (Miami).'},
+{id:'cr6',phase:'p2',flag:'',name:'Develop a FL subcontractor surge network',desc:'Pre-qualify FL-licensed subs now so you can present a scalable workforce in IOU bids and mobilize storm work without carrying year-round payroll.'},
+{id:'cr7',phase:'p2',flag:'',name:'Subcontractor agreements & sub prequal',desc:'Master sub agreements with indemnity and insurance/additional-insured requirements, plus ISNetworld prequal for each sub — so your surge network is contract-ready for IOU bids and storm work.'},
+]},
+{id:'equip',label:'Equipment & Fleet',icon:'🚛',cls:'eq',items:[
+{id:'eq1',phase:'p0',flag:'priority',name:'Set the bucket-truck acquisition plan',desc:'FL line clearing needs 55–75 ft aerial forestry bucket trucks. Use existing fleet, transport south. For extra trucks, RPO preserves capital while you build backlog. Dealers (Altec, Elliott, Terex, Custom Truck) in Orlando, Tampa & Jacksonville. Rental: Global Equipment, Dozer, Custom Truck, TRL, Scott Equipment.'},
+{id:'eq2',phase:'p0',flag:'priority',name:'Equipment yard / secure parking & laydown',desc:'An office suite isn\'t enough — trucks, chippers and equipment need fenced overnight parking and a laydown area. Often the practical anchor for where you base FL ops.'},
+{id:'eq3',phase:'p0',flag:'priority',name:'Pickup — estimator / circuit specialist',desc:'Your estimator walks circuits to bid; they need a truck on day one.'},
+{id:'eq4',phase:'p0',flag:'priority',name:'Lowboy / equipment haulers',desc:'To move bucket trucks, chippers, dozers and loaders south from up north and between FL jobsites. Decide owned vs. contracted hauling, and line up a hauler relationship either way.'},
+{id:'eq5',phase:'p0',flag:'priority',name:'Wood chippers (1 per crew)',desc:'Core production gear — drum / whole-tree chippers sized to your work. Climbing and bucket crews both generate brush that has to be chipped. Pair each with a chip truck.'},
+{id:'eq6',phase:'p0',flag:'',name:'Chip / dump trucks',desc:'To haul chips and debris off site — typically one chip truck per chipper/crew.'},
+{id:'eq7',phase:'p0',flag:'',name:'Saws, climbing & rigging gear, PPE',desc:'Chainsaws, pole saws, climbing saddles & ropes, rigging hardware, chaps/helmets/eye & hearing protection, fire extinguishers, first-aid kits. Budget as recurring consumables.'},
+{id:'eq8',phase:'p1',flag:'',name:'Set up rental equipment vendor accounts',desc:'Open accounts for surge/backup gear — aerials, chippers, dozers, loaders — plus general rental (Sunbelt, United). Get accounts and rate sheets in place before you need them.'},
+{id:'eq9',phase:'p1',flag:'',name:'Line up mobile mechanics',desc:'Field repair keeps downed trucks earning. Establish on-call mobile mechanic coverage for the I-4 corridor and your active job areas.'},
+{id:'eq10',phase:'p1',flag:'',name:'Identify local mechanic & repair shops',desc:'For heavier repairs, hydraulics and tires — and importantly, annual aerial-device (bucket) inspections/certs and DOT vehicle inspections.'},
+{id:'eq11',phase:'p1',flag:'',name:'Fuel program',desc:'Fleet fuel cards and/or on-site bulk fuel + DEF. A meaningful line item once trucks are running daily.'},
+{id:'eq12',phase:'p1',flag:'',name:'Fleet GPS / telematics',desc:'Crew GPS (e.g., Samsara, Verizon Connect) for fleet management and ELD compliance — several utilities now require GPS on crews working their system.'},
+{id:'eq13',phase:'p1',flag:'',name:'Drone / LiDAR survey capability',desc:'Utilities increasingly require circuit documentation (vegetation encroachment mapping, pre/post photos) as part of VM contracts. Having drone capability — or a partnership with a drone survey firm — is becoming a differentiator in bids.',isNew:true},
+{id:'eq14',phase:'p2',flag:'',name:'Loader / grapple equipment (storm + removals)',desc:'A compact track loader / mini skid with grapple, plus a knuckleboom or grapple truck for large wood and storm debris. Heavily used in hurricane mobilizations.'},
+{id:'eq15',phase:'p2',flag:'',name:'Wood / chip disposal sites & agreements',desc:'Line up mulch yards, landfills or disposal partners and confirm FL yard-waste rules. Disposal logistics quietly drive crew productivity and cost.'},
+{id:'eq16',phase:'p2',flag:'',name:'Pickups — general foremen & foremen (1 each)',desc:'One per general foreman and per foreman for crew transport, oversight and jobsite mobility.'},
+{id:'eq17',phase:'p2',flag:'',name:'Pickups — climbing crews (1 each)',desc:'One per climbing crew for crew, gear and small-tool transport.'},
+]},
+{id:'bizdev',label:'Business Development',icon:'📈',cls:'bd',items:[
+{id:'bd1',phase:'p1',flag:'',name:'Create a Florida capabilities statement',desc:'A 2-page FL one-pager (separate from your main brochure): hurricane restoration experience documented with specifics (Hillsborough & Highlands County work), ISNetworld A rating, TCIA CTSP cert, crew counts, FL-based equipment list, references. Update the website with FL market language.'},
+{id:'bd2',phase:'p1',flag:'priority',name:'Build a master prequalification package',desc:'Each utility runs a formal prequal questionnaire. Assemble the data room once: 3-yr EMR & safety stats, financials/bonding letter, NY/ME/PA references & past performance, equipment list, certs and licenses. Reuse it for every IOU, co-op and muni — and for every future state.'},
+{id:'bd3',phase:'p2',flag:'priority',name:'Build FL-specific unit-price bid templates',desc:'FL pricing differs from NY/PA/ME — year-round cycles, different species (palms, live & laurel oaks, Australian pine), humidity equipment costs, summer lightning production impacts. Have your estimator build a FL cost model from scratch — do NOT port northern unit prices.'},
+{id:'bd4',phase:'p2',flag:'',name:'Build your MSA release calendar',desc:'Four ways to track: (1) FL PSC docket search — floridapsc.com; FPL\'s 2026 SPP is Docket 20250014-EI. (2) Vendor portal alerts in Ariba/SAP for veg/ROW categories. (3) DemandStar, BidSync, PlanetBids for munis/co-ops. (4) Direct outreach — ask procurement when the current VM MSA expires and when they\'ll rebid.'},
+{id:'bd5',phase:'p2',flag:'priority',name:'Land first municipal / small-co-op award',desc:'FIRST REVENUE MILESTONE. Convert one of the faster-cycle targets (Lakeland, OUC, Withlacoochee EC, Central FL EC) into a signed award to prove local crew capability before IOU bids.'},
+{id:'bd6',phase:'p2',flag:'',name:'Document Hillsborough & Highlands County hurricane work',desc:'Create a formal project profile: scope, client contact, dates, crew size, equipment deployed, measurable output (miles cleared, structures restored). Use in every bid and prequal package. This is your #1 FL differentiator.',isNew:true},
+]},
+{id:'industry',label:'Industry Relationships',icon:'🌐',cls:'ir',items:[
+{id:'ir1',phase:'p1',flag:'priority',name:'Join the Florida VM Association (FVMA)',desc:'gofvma.org — puts you in the room with utility VM managers, gives you the member directory, and provides advance procurement intel. Join this month.'},
+{id:'ir2',phase:'p3',flag:'',name:'Attend the FMEA VM Roundtable',desc:'Florida Municipal Electric Association\'s annual VM Roundtable — municipal VM buyers (OUC, JEA, GRU, Lakeland, Tallahassee) in one room. Register at flpublicpower.com.'},
+{id:'ir3',phase:'p3',flag:'',name:'Attend the FECA annual conference',desc:'Where co-op relationships get built.'},
+{id:'ir4',phase:'p1',flag:'',name:'Map incumbent contractors & their MSA expiry dates',desc:'Know who holds each IOU and co-op VM MSA, and when their contracts expire. FVMA membership and your estimator hire are the best sources. Incumbents\' MSA expiry dates are your bid windows.',isNew:true},
+]},
+{id:'safety',label:'Safety, Certifications & Compliance',icon:'🦺',cls:'sa',items:[
+{id:'sa1',phase:'p0',flag:'priority',name:'Start FL pesticide license — Category 6 (ROW)',desc:'FDACS certified applicator license (long lead — start now). ROW herbicide (basal bark, cut stump, foliar) is a major $/mile add-on and one of the highest-return FL certs — differentiates you from trim-only contractors.'},
+{id:'sa2',phase:'p0',flag:'critical',name:'Formal written safety program + EMR tracking',desc:'The backbone of every utility prequal: a documented safety program, OSHA 300 logs, and a tracked 3-year EMR. This is what earns your ISNetworld A rating and clears prequalification. Designate a safety lead as you grow.'},
+{id:'sa3',phase:'p1',flag:'critical',name:'Crew qualifications & training',desc:'To work near energized lines, crews must be OSHA 1910.269 line-clearance qualified. Stack the expected training: ANSI Z133, EHAP (Electrical Hazards Awareness), First Aid/CPR/AED, OSHA 10/30, aerial & chipper operation, and aerial (bucket) rescue.'},
+{id:'sa4',phase:'p1',flag:'priority',name:'Work-zone / Maintenance of Traffic (MOT)',desc:'Roadside ROW work needs FDOT MOT-certified staff, certified flaggers, and traffic-control plans. Required on most road-adjacent utility work in Florida.'},
+{id:'sa5',phase:'p1',flag:'',name:'Confirm TCIA CTSP & ANSI A300 alignment',desc:'Buyers expect ANSI A300 compliance. Document your CTSP certification for the capabilities statement.'},
+{id:'sa6',phase:'p3',flag:'',name:'Add NERC FAC-003 transmission compliance',desc:'For transmission MSAs (69kV+): FAC-003 documentation, OSHA 1910.269 qualified electrical-hazard training, and higher minimum insurance limits. Expands value per circuit.'},
+]},
+{id:'storm',label:'Storm & Emergency Readiness',icon:'🌀',cls:'st',items:[
+{id:'st1',phase:'p0',flag:'critical',name:'Get on utility storm contractor lists — now',desc:'Separate from VM MSAs. Your hurricane experience is the differentiator. Storm work mobilizes within 24–48 hours of landfall and runs for months at 150–200% of normal billing. Contact each utility\'s emergency management / storm operations (separate from procurement): FPL, Duke, TECO, JEA. Hurricane season is June–Nov.'},
+{id:'st2',phase:'p1',flag:'',name:'Register with FL Division of Emergency Management',desc:'floridadisaster.org — FDEM maintains a state contractor registry for disaster response, enabling direct state debris/restoration contracts that supplement utility-direct storm work.'},
+{id:'st3',phase:'p1',flag:'',name:'Develop a storm-specific mobilization plan',desc:'Pre-define: crew call tree, equipment staging locations, sub-contractor activation list, lodging/housing plan for surge workforce, and designated storm coordinator. Share with utility emergency management contacts so they know you can execute when a storm makes landfall.',isNew:true},
+]},
+{id:'civil',label:'Civil Construction Expansion (Phase 5)',icon:'🏗️',cls:'ci',items:[
+{id:'ci1',phase:'p5',flag:'priority',name:'Confirm contractor classifications for civil scope',desc:'Your FL contractor license anchors this. Confirm the approved classification\'s scope, and assess whether you\'ll also need an Underground Utility & Excavation Contractor and/or Electrical Contractor license for substation and data-center work.'},
+{id:'ci2',phase:'p5',flag:'',name:'Define civil service lines & self-perform vs. sub',desc:'Pick your lanes: substation civil (foundations, grounding grid, control-house pads, fencing, sitework), underground utilities (duct bank, conduit, manholes/vaults, directional boring, trenching, cable), and data-center site/underground work.'},
+{id:'ci3',phase:'p5',flag:'priority',name:'Cross-sell existing utility customers\' capital programs',desc:'Go back to FPL, Duke, TECO, the co-ops and munis where you already hold VM relationships and position for their substation, underground and grid-hardening capital work. It\'s a different department (capital projects/engineering & construction, not vegetation) — get introduced.'},
+{id:'ci4',phase:'p5',flag:'',name:'Register for capital-construction procurement',desc:'Add substation/underground/civil commodity codes in each utility\'s Ariba/SAP and complete the separate construction prequalification — typically higher bonding, financial and safety thresholds than VM.'},
+{id:'ci5',phase:'p5',flag:'priority',name:'Build heavy-civil estimating & project controls',desc:'Hire/develop a civil estimator — substation and underground bids are takeoff-driven lump-sum/unit-price work, different from VM unit pricing — plus project controls: CPM scheduling, submittals/RFIs, QA/QC, and certified payroll for prevailing-wage jobs.'},
+{id:'ci6',phase:'p5',flag:'priority',name:'Heavy-civil equipment plan',desc:'Excavators, dozers, loaders, trenchers, directional drills (HDD), compaction, dump trucks, and cranes for setting substation steel & equipment. Lean on Ironwood Heavy Highway\'s existing earthwork fleet before buying.'},
+{id:'ci7',phase:'p5',flag:'',name:'Expand surety / bonding capacity for civil',desc:'Civil contracts carry far larger bid, performance and payment bonds than VM. Grow single-project and aggregate bonding limits with your surety well ahead of pursuing the work.'},
+{id:'ci8',phase:'p5',flag:'',name:'Civil construction safety & certifications',desc:'Excavation/trenching competent person (OSHA 1926 Subpart P), confined-space entry (manholes/vaults), NCCCO crane certification, OSHA 30 construction, and substation high-voltage/NERC-CIP site awareness.'},
+{id:'ci9',phase:'p5',flag:'',name:'Target data-center developers & EPCs',desc:'Florida\'s data-center buildout is growing. Position with hyperscale/colo developers and their GC/EPC partners for site civil, underground electrical/duct bank and substation tie-ins — your utility relationships are the differentiator.'},
+{id:'ci10',phase:'p5',flag:'priority',name:'Land a pilot civil / substation project',desc:'Win a first small substation or underground job with an existing utility customer to build past performance in the new line before chasing large EPC and data-center work.'},
+]},
+{id:'blueprint',label:'Systematize / Blueprint',icon:'🗺️',cls:'bp',items:[
+{id:'bp1',phase:'p4',flag:'priority',name:'Document the FL process as a replicable SOP',desc:'After ~12 months, codify every step: utility registration processes, insurance requirements by IOU, the state VM association (FVMA equivalent), MSA tracking methods, hiring sources, equipment leasing contacts, and bid-template structure. THIS is the blueprint — your market-entry SOP for Georgia, the Carolinas, Tennessee, Texas and beyond.'},
+{id:'bp2',phase:'p4',flag:'',name:'Next-state selection: Georgia, Carolinas, Tennessee',desc:'Georgia Power rebids VM ~2026; Duke Energy Carolinas ~2027. Georgia has 41 co-ops; SC has Dominion Energy SC + Duke Progress. Evaluate on: proximity to FL for equipment/crew logistics, IOU MSA cycle timing, co-op density, and storm exposure.',isNew:true},
+{id:'bp3',phase:'p4',flag:'',name:'Maintain multi-state ISNetworld profile',desc:'A strong ISNetworld A rating in FL immediately helps you prequalify with sister utilities in other states — NextEra properties nationwide, Duke Energy\'s full footprint, Emera properties. This compounds across every new market you enter.',isNew:true},
+]},
+{id:'chambers',label:'Chamber & Networking Contacts',icon:'🏛️',cls:'ch',items:[
+{id:'ch1',phase:'p1',flag:'priority',name:'Manatee Chamber — join & attend events',desc:'Key utility members: FPL, Peace River Electric Co-Op, TECO. Events: Business after Hours, Power Connection Lunch, Coffee Club. Jacki Dezelski, President/CEO · 222 10th Street W., Bradenton, FL 34205 · (941) 748-4842 · manateechamber.com. Bradenton is your base — this chamber directly connects you to FPL and Peace River EC.'},
+{id:'ch2',phase:'p1',flag:'priority',name:'Tampa Bay Chamber — join & attend events',desc:'Key utility members: Seminole Electric Co-Op, TECO. Events: After 5 Networking Event. Patie Powers, Director of Membership · 201 North Franklin St, Suite 201, Tampa, FL 33602 · (813) 228-7777 · tampabaychamber.com.'},
+{id:'ch3',phase:'p1',flag:'',name:'Sarasota Chamber — join & attend events',desc:'Key utility members: FPL, TECO. Events: Power Hour Lunch, Young Professionals After Hours, Chamber Connect. Heather Kasten, President/CEO · 1945 Fruitville Road, Sarasota, FL 34236 · (941) 955-8187 · sarasotachamber.com.'},
+{id:'ch4',phase:'p1',flag:'',name:'St. Petersburg Chamber — join & attend events',desc:'Key utility members: Duke Energy, TECO. Events: Chamber Community Connection. Chris Steinocher, President & CEO · 100 2nd Ave North #150, St. Petersburg, FL 33701 · (727) 821-4069 · stpete.com.'},
+{id:'ch5',phase:'p2',flag:'',name:'Downtown Orlando Partnership — join & attend events',desc:'Key utility members: OUC, TECO. Events: First Friday, Lunch + Learn, Third Thursday. Jill Vaughan, President/CEO · 333 S. Garland Ave. 13th Floor, Orlando, FL 32802 · (407) 228-3891 · doporlando.com.'},
+{id:'ch6',phase:'p1',flag:'priority',name:'FMEA — Florida Municipal Electric Association',desc:'Primary association for all 33 FL municipal/public electric utilities. Joining as an associate member gets you in the room with municipal VM buyers. Amy Zubaly, Executive Director · 417 E. College Ave, Tallahassee, FL 32301 · (850) 224-3314 · flpublicpower.com. Hosts the annual VM Roundtable.'},
+{id:'ch7',phase:'p2',flag:'',name:'FMPA — Florida Municipal Power Agency',desc:'Power supply agency for 32 municipal electric utilities. Important for understanding the municipal network and getting introductions. Jacob Williams, General Manager & CEO · 8553 Commodity Circle, Orlando, FL 32819 · (407) 355-7767 · fmpa.com.'},
+{id:'ch8',phase:'p2',flag:'',name:'NUCA Southwest FL — join for civil networking',desc:'Trade Association for Utility & Transportation Construction Industry. Service area: Charlotte, Collier, DeSoto, Glades, Hardy, Hendry, Highlands, and Lee Counties (covers LCEC and Glades EC territory). Rhonda Cason, Executive Director · PO Box 62207, Fort Myers, FL 33906 · (239) 939-1952 · nucaswfl.com. Critical for Phase 5 civil expansion.'},
+{id:'ch9',phase:'p2',flag:'',name:'SUCA — Suncoast Utility Contractors Association',desc:'Trade Association for Utility & Transportation Construction Industry. Service area: Citrus, Hernando, Hillsborough, Manatee, Pasco, Pinellas, Polk (W of Lakeland), Sarasota, and Sumter Counties — covers Duke, TECO, SECO, and Withlacoochee EC territory. Theresa Mannix, Executive Director · PO Box 21424, Tampa, FL 33622 · (727) 600-7158 · suca.org.'},
+]},
+{id:'municontacts',label:'Municipality Procurement Contacts',icon:'📍',cls:'mc',items:[
+{id:'mc1',phase:'p1',flag:'priority',name:'City of Bradenton — contact procurement',desc:'Population: 55,905. Tammy Winton-Spearman, CPPO, CPPB, Purchasing Manager · 101 Old Main St. W., Bradenton, FL 34205 · (941) 932-9400 · cityofbradenton.com. Your base city — one of the first local calls you should make.'},
+{id:'mc2',phase:'p1',flag:'priority',name:'Manatee County — contact procurement',desc:'Population: 412,703. Sherri Adams-Meier, Procurement Team Leader (Construction) · 1112 Manatee Ave West, Bradenton, FL 34205 · (941) 749-3014 · mymanatee.org. Large county contract opportunity adjacent to your Bradenton base.'},
+{id:'mc3',phase:'p1',flag:'priority',name:'City of Tampa — contact procurement',desc:'Population: 387,050. Gregory K. Spearman, CPPO, NIGP-CPPP, Director of Purchasing · 306 East Jackson St., Tampa, FL 33602 · (813) 274-8351 · tampa.gov.'},
+{id:'mc4',phase:'p1',flag:'priority',name:'Hillsborough County — contact procurement',desc:'Population: 1,478,000 (largest county in target area). Scott Stromer, Department Director, Procurement Services · 601 E. Kennedy Blvd, Tampa, FL 33602 · (813) 272-5790 · hillsboroughcounty.org.'},
+{id:'mc5',phase:'p1',flag:'',name:'City of St. Petersburg — contact procurement',desc:'Population: 258,201. Stephanie Swinson, Director of Procurement & Supply Management · 1 Fourth St. N, St. Petersburg, FL 33701 · (727) 893-7220 · stpete.org.'},
+{id:'mc6',phase:'p1',flag:'',name:'Pinellas County — contact procurement',desc:'Population: 956,615. Merry Celeste CPPB, CPM, Division Director of Purchasing and Risk Management · 400 S. Ft. Harrison Ave, Clearwater, FL 33756 · (727) 464-3559 · pinellas.gov.'},
+{id:'mc7',phase:'p1',flag:'',name:'City of Clearwater — contact procurement',desc:'Population: 116,674. George McKibben, Purchasing Manager · 100 S. Myrtle Ave., Clearwater, FL 33756 · (727) 562-4630 · myclearwater.com.'},
+{id:'mc8',phase:'p2',flag:'',name:'City of Orlando — contact procurement',desc:'Population: 309,154. David Billingsley, Chief Procurement Officer · 400 S. Orange Ave., Orlando, FL 32801 · orlando.gov.'},
+{id:'mc9',phase:'p2',flag:'',name:'Sarasota County — contact procurement',desc:'Population: 447,057. Roger Feeley, Procurement & Contracts Manager · 1600 Ringling Blvd., Sarasota, FL 34236 · (941) 404-8121 · scgov.net.'},
+{id:'mc10',phase:'p2',flag:'',name:'City of Fort Myers — contact procurement',desc:'Population: 92,245. Denise Finn, NIGP-CPP, Procurement Manager · 2200 Second St., Fort Myers, FL 33901 · (239) 321-7232 · cityftmyers.com. Fort Myers is in LCEC territory — good parallel outreach.'},
+]},
+];
+
+// ── COLOR MAP ──
+const CLR={o:'#f59e0b',r:'#ef4444',i:'#3b82f6',c:'#14b8a6',m:'#22c55e',cr:'#a855f7',eq:'#a855f7',bd:'#3b82f6',ir:'#f59e0b',sa:'#ef4444',st:'#3b82f6',ci:'#a855f7',bp:'#22c55e',ch:'#f59e0b',mc:'#22c55e'};
+const ITLR={o:'#1a1200',r:'#1a0000',i:'#00101a',c:'#001a18',m:'#0a1200',cr:'#0d0015',eq:'#100010',bd:'#001a3a',ir:'#1a0a00',sa:'#1a0010',st:'#001020',ci:'#0a0a1a',bp:'#001a0a',ch:'#1a0a00',mc:'#0a1200'};
+
+// ── STATE (shared via window.storage) ──
+let state={};
+let saveTimer=null;
+
+async function loadShared(){
+  try{
+    const r=await window.storage.get('ironwood_fl_state',true);
+    if(r&&r.value){
+      const parsed=JSON.parse(r.value);
+      state=parsed||{};
+    }
+  }catch(e){state={};}
+  // pre-mark done items
+  SECTIONS.forEach(s=>s.items.forEach(item=>{
+    if(item.flag==='done'&&state[item.id]===undefined)state[item.id]=true;
+  }));
+  setSyncStatus('live');
+  document.getElementById('loading').style.display='none';
+  document.getElementById('main').style.display='block';
+  renderAll();
+}
+
+async function saveShared(){
+  setSyncStatus('saving');
+  try{
+    await window.storage.set('ironwood_fl_state',JSON.stringify(state),true);
+    setSyncStatus('live');
+  }catch(e){setSyncStatus('error');}
+}
+
+function setSyncStatus(s){
+  const dot=document.getElementById('sync-dot');
+  const lbl=document.getElementById('sync-lbl');
+  if(s==='live'){dot.className='sync-dot live';lbl.textContent='Synced — shared progress visible to all viewers';}
+  else if(s==='saving'){dot.className='sync-dot saving';lbl.textContent='Saving…';}
+  else{dot.className='sync-dot';lbl.textContent='Sync error — changes may not be visible to others';}
+}
+
+function schedSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveShared,800);
+}
+
+async function resetAll(){
+  if(!confirm('Reset ALL checkboxes for a new state? This clears shared progress for everyone.'))return;
+  state={};
+  SECTIONS.forEach(s=>s.items.forEach(item=>{
+    if(item.flag==='done')state[item.id]=true;
+  }));
+  await saveShared();
+  renderAll();
+}
+
+// ── RENDER ──
+function flagTag(f){
+  if(f==='critical')return'<span class="tag tag-critical">★ CRITICAL</span>';
+  if(f==='priority')return'<span class="tag tag-priority">PRIORITY</span>';
+  if(f==='done')return'<span class="tag tag-done">✓ DONE</span>';
+  return'';
+}
+const PLBL={p0:'P0 · Foundation',p1:'P1 · 30-Day',p2:'P2 · First Revenue',p3:'P3 · IOU Scale',p4:'P4 · Systematize',p5:'P5 · Civil'};
+function phaseTag(p){return`<span class="tag tag-${p}">${PLBL[p]||p}</span>`;}
+
+function renderAll(){
+  const main=document.getElementById('main');
+  main.innerHTML='';
+  SECTIONS.forEach(sec=>{
+    const el=document.createElement('div');
+    el.className='section';
+    el.id='sec-'+sec.id;
+    el.innerHTML=secHTML(sec);
+    main.appendChild(el);
+  });
+  updateAllProg();
+  attachFilter();
+  // open first 3 by default
+  ['office','license','iou'].forEach(id=>{
+    const b=document.getElementById('body-'+id);
+    const c=document.querySelector(`#sec-${id} .chev`);
+    if(b){b.classList.add('open');}
+    if(c){c.classList.add('open');}
+  });
+}
+
+function secHTML(sec){
+  const total=sec.items.length;
+  const done=sec.items.filter(i=>state[i.id]).length;
+  const pct=total?Math.round(done/total*100):0;
+  const color=CLR[sec.cls]||'#888';
+  const ibg=ITLR[sec.cls]||'#111';
+  const items=sec.items.map(item=>itemHTML(item)).join('');
+  return`<div class="sh" onclick="togSec('${sec.id}')">
+    <div class="si" style="background:${ibg}">${sec.icon}</div>
+    <div class="st">${sec.label}</div>
+    <div class="sc">${done}/${total} · ${pct}%</div>
+    <div class="sp"><div class="sp-bar"><div class="sp-fill" id="spf-${sec.id}" style="width:${pct}%;background:${color}"></div></div></div>
+    <span class="chev" id="chev-${sec.id}">▶</span>
+  </div>
+  <div class="sb" id="body-${sec.id}">${items}</div>`;
+}
+
+function itemHTML(item){
+  const ck=state[item.id]?'checked':'';
+  const dc=state[item.id]?'done':'';
+  const nb=item.isNew?'<span class="tag tag-new">+ NEW</span>':'';
+  return`<div class="task ${dc}" id="task-${item.id}" data-phase="${item.phase}" data-flag="${item.flag}">
+    <div class="cbw" onclick="tog('${item.id}')"><div class="cb ${ck}" id="cb-${item.id}"></div></div>
+    <div class="tb">
+      <div class="ttop"><div class="tname">${item.name}</div></div>
+      <div class="ttags">${phaseTag(item.phase)}${flagTag(item.flag)}${nb}</div>
+      <div class="tdesc">${item.desc}</div>
+    </div>
+  </div>`;
+}
+
+function tog(id){
+  state[id]=!state[id];
+  const task=document.getElementById('task-'+id);
+  const cb=document.getElementById('cb-'+id);
+  if(state[id]){task.classList.add('done');cb.classList.add('checked');}
+  else{task.classList.remove('done');cb.classList.remove('checked');}
+  const sec=SECTIONS.find(s=>s.items.some(i=>i.id===id));
+  if(sec)updateSecProg(sec);
+  updateOverallProg();
+  schedSave();
+}
+
+function togSec(id){
+  const b=document.getElementById('body-'+id);
+  const c=document.getElementById('chev-'+id);
+  const open=b.classList.toggle('open');
+  if(open)c.classList.add('open');else c.classList.remove('open');
+}
+
+function updateSecProg(sec){
+  const total=sec.items.length;
+  const done=sec.items.filter(i=>state[i.id]).length;
+  const pct=total?Math.round(done/total*100):0;
+  const cnt=document.querySelector(`#sec-${sec.id} .sc`);
+  const bar=document.getElementById('spf-'+sec.id);
+  if(cnt)cnt.textContent=`${done}/${total} · ${pct}%`;
+  if(bar)bar.style.width=pct+'%';
+}
+function updateAllProg(){SECTIONS.forEach(s=>updateSecProg(s));updateOverallProg();}
+function updateOverallProg(){
+  const all=SECTIONS.flatMap(s=>s.items);
+  const total=all.length;
+  const done=all.filter(i=>state[i.id]).length;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('op-fill').style.width=pct+'%';
+  document.getElementById('op-done').textContent=done;
+  document.getElementById('op-total').textContent=total;
+}
+
+// ── FILTER ──
+function attachFilter(){
+  document.querySelectorAll('.fbtn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilter(btn.dataset.filter);
+    });
+  });
+}
+function applyFilter(f){
+  document.querySelectorAll('.task').forEach(t=>{
+    const p=t.dataset.phase,fl=t.dataset.flag,done=t.classList.contains('done');
+    let show=true;
+    if(f==='critical')show=fl==='critical';
+    else if(f==='priority')show=fl==='priority'||fl==='critical';
+    else if(f==='p0')show=p==='p0';
+    else if(f==='p1')show=p==='p1';
+    else if(f==='p2')show=p==='p2';
+    else if(f==='p3')show=p==='p3';
+    else if(f==='p5')show=p==='p5';
+    else if(f==='open')show=!done;
+    else if(f==='done')show=done;
+    t.classList.toggle('hidden',!show);
+  });
+}
+
+// ── INIT ──
+loadShared();
+</script>
+</body>
+</html>
